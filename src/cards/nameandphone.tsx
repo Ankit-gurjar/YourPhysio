@@ -16,7 +16,9 @@ function NameandPhoneno({ name, mobile_no, updatefield }: UserFormPropes) {
       <Heading as="h1" size="lg" color="black">
         Book an Appointment
       </Heading>
-      <Text color="black">60+ Expert Physiotherapists for 200+ Conditions</Text>
+      <Text color="#5943bc">
+        60+ Expert Physiotherapists for 200+ Conditions
+      </Text>
 
       <FormLabel color="black">Name</FormLabel>
       <Input

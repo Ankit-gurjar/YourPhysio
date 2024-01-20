@@ -4,6 +4,8 @@ import { useMultistepForm } from "../custom/useMultistepform.ts";
 import NameandPhoneno from "../cards/nameandphone.tsx";
 import AgeCity from "../cards/age.tsx";
 import Complain from "../cards/complaint.tsx";
+import PastExp from "../cards/pastexp.tsx";
+import ThankYou from "../cards/thankyou.tsx";
 
 type FormData = {
   name: string;
@@ -12,6 +14,7 @@ type FormData = {
   city: string;
   company: string;
   complain: string;
+  pastexp: string;
 };
 
 const INITIAL_DATA = {
@@ -21,6 +24,7 @@ const INITIAL_DATA = {
   city: "",
   company: "",
   complain: "",
+  pastexp: "",
 };
 
 function Hero() {
@@ -30,23 +34,35 @@ function Hero() {
       return { ...prev, ...fields };
     });
   }
+
   const { steps, currentStepIdx, step, isFirstStep, isLastStep, next, back } =
     useMultistepForm([
       <NameandPhoneno {...data} updatefield={updateFields} />,
       <AgeCity {...data} updatefield={updateFields} />,
       <Complain {...data} updatefield={updateFields} />,
+      <PastExp {...data} updatefield={updateFields} />,
+      <ThankYou />,
     ]);
 
   function submitform(e: FormEvent) {
     e.preventDefault();
-    if (currentStepIdx === 0 && (!data.name || !data.mobile_no))
+    if (currentStepIdx === 0) {
+      if (!data.name || !data.mobile_no) return alert("Fill details");
+      else if (
+        (currentStepIdx === 0 && Number(data.mobile_no) < 999999999) ||
+        Number(data.mobile_no) > 9999999999
+      )
+        return alert("Enter Correct mobile no");
+    } else if (currentStepIdx === 1) {
+      if (!data.age || !data.city || !data.company)
+        return alert("Fill details");
+      else if (Number(data.age) < 1 || Number(data.age) > 120)
+        return alert("Enter Correct Age");
+    } else if (currentStepIdx === 2 && !data.complain)
       return alert("Fill details");
-    else if (currentStepIdx === 1 && (!data.age || !data.city || !data.company))
-      return alert("Fill details");
-    else if (currentStepIdx === 2 && !data.complain)
-      return alert("Fill details");
-    else if (!isLastStep) return next();
-    alert("Our Team will call you to confirm a Slot");
+    else if (Number(data.age) < 40) next();
+    else if (isLastStep) alert("Our Team will call you to confirm a Slot");
+    return next();
   }
 
   return (
@@ -84,10 +100,16 @@ function Hero() {
             gap="0.5rem"
             marginTop="1rem"
           >
-            {!isFirstStep && <Button onClick={back}>Back</Button>}
-            <Button colorScheme="teal" onClick={submitform}>
-              {isLastStep ? "Submit" : "Continue"}
-            </Button>
+            {!isFirstStep && !isLastStep && (
+              <Button colorScheme="red" onClick={back}>
+                Back
+              </Button>
+            )}
+            {!isLastStep && (
+              <Button colorScheme="teal" onClick={submitform}>
+                {currentStepIdx === steps.length - 2 ? "Submit" : "Continue"}
+              </Button>
+            )}
           </ButtonGroup>
         </FormControl>
       </Box>
