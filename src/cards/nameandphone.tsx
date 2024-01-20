@@ -1,20 +1,41 @@
 import React from "react";
 
-import { Heading, Text, FormControl, FormLabel, Input } from "@chakra-ui/react";
+import { Heading, Text, FormLabel, Input } from "@chakra-ui/react";
 
-function NameandPhoneno() {
+type UserData = {
+  name: string;
+  mobile_no: string;
+};
+type UserFormPropes = UserData & {
+  updatefield: (fields: Partial<UserData>) => void;
+};
+
+function NameandPhoneno({ name, mobile_no, updatefield }: UserFormPropes) {
   return (
     <>
       <Heading as="h1" size="lg" color="black">
         Book an Appointment
       </Heading>
       <Text color="black">60+ Expert Physiotherapists for 200+ Conditions</Text>
-      <FormControl p={5}>
-        <FormLabel color="black">Name</FormLabel>
-        <Input type="text" color="black" />
-        <FormLabel color="black">Mobile Number</FormLabel>
-        <Input type="number" color="black" />
-      </FormControl>
+
+      <FormLabel color="black">Name</FormLabel>
+      <Input
+        required
+        type="text"
+        value={name}
+        onChange={(e) => {
+          updatefield({ name: e.target.value });
+        }}
+        color="black"
+      />
+      <FormLabel color="black">Mobile Number</FormLabel>
+      <Input
+        color="black"
+        value={mobile_no}
+        onChange={(e) => {
+          updatefield({ mobile_no: e.target.value });
+        }}
+      ></Input>
     </>
   );
 }

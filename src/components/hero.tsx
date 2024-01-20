@@ -1,18 +1,52 @@
-import React, { FormEvent } from "react";
-import { Box, Button, FormControl } from "@chakra-ui/react";
+import React, { FormEvent, useState } from "react";
+import { Box, Button, ButtonGroup, FormControl } from "@chakra-ui/react";
 import { useMultistepForm } from "../custom/useMultistepform.ts";
 import NameandPhoneno from "../cards/nameandphone.tsx";
 import AgeCity from "../cards/age.tsx";
 import Complain from "../cards/complaint.tsx";
 
+type FormData = {
+  name: string;
+  mobile_no: string;
+  age: string;
+  city: string;
+  company: string;
+  complain: string;
+};
+
+const INITIAL_DATA = {
+  name: "",
+  mobile_no: "",
+  age: "",
+  city: "",
+  company: "",
+  complain: "",
+};
+
 function Hero() {
+  const [data, setData] = useState(INITIAL_DATA);
+  function updateFields(fields: Partial<FormData>) {
+    setData((prev) => {
+      return { ...prev, ...fields };
+    });
+  }
   const { steps, currentStepIdx, step, isFirstStep, isLastStep, next, back } =
-    useMultistepForm([<NameandPhoneno />, <AgeCity />, <Complain />]);
+    useMultistepForm([
+      <NameandPhoneno {...data} updatefield={updateFields} />,
+      <AgeCity {...data} updatefield={updateFields} />,
+      <Complain {...data} updatefield={updateFields} />,
+    ]);
 
-  function onSubmit(e: FormEvent) {
+  function submitform(e: FormEvent) {
     e.preventDefault();
-
-    next();
+    if (currentStepIdx === 0 && (!data.name || !data.mobile_no))
+      return alert("Fill details");
+    else if (currentStepIdx === 1 && (!data.age || !data.city || !data.company))
+      return alert("Fill details");
+    else if (currentStepIdx === 2 && !data.complain)
+      return alert("Fill details");
+    else if (!isLastStep) return next();
+    alert("Our Team will call you to confirm a Slot");
   }
 
   return (
@@ -31,10 +65,10 @@ function Hero() {
         backgroundColor="#F2F7F2"
         boxShadow="dark-lg"
         position="relative"
-        minH="50vh"
-        minW="50vh"
+        height="55vh"
+        width="50vh"
       >
-        <FormControl onSubmit={onSubmit}>
+        <FormControl p={5} isRequired>
           <Box
             display="flex"
             top="0.5rem"
@@ -44,17 +78,17 @@ function Hero() {
             {currentStepIdx + 1}/{steps.length}
           </Box>
           {step}
-          <Box
+          <ButtonGroup
             display="flex"
             justifyContent="flex-end"
             gap="0.5rem"
             marginTop="1rem"
           >
             {!isFirstStep && <Button onClick={back}>Back</Button>}
-            <Button colorScheme="teal">
+            <Button colorScheme="teal" onClick={submitform}>
               {isLastStep ? "Submit" : "Continue"}
             </Button>
-          </Box>
+          </ButtonGroup>
         </FormControl>
       </Box>
     </Box>
